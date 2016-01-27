@@ -9,16 +9,16 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
-#include "ClusterCenter.h"
+#include "SLICsp.h"
 
 using namespace cv;
 using namespace std;
 
 //define path and file name of image
-#define FILE_NAME "e:\\lena.jpg"
+#define FILE_NAME "d:\\lena.jpg"
 
 //define input parameters
-#define NUMBER_OF_SUPERPIXELS 1200
+#define NUMBER_OF_SUPERPIXELS 4
 
 //structure of cluster center
 /*struct Cluster
@@ -30,19 +30,13 @@ using namespace std;
 	uint y = 0;
 };*/
 
-struct PixelSLIC
-{
-	int label = -1;
-	uint distance = numeric_limits<uint>::max();
-};
-
 int main()
 {
 	//k number of super pixels
-	uint k = NUMBER_OF_SUPERPIXELS;
+	unsigned int k = NUMBER_OF_SUPERPIXELS;
 	//original image
 	Mat inputImage;
-	//image in gray space
+	//image in grayscale space
 	Mat grayImage;
 	//image in LAB space 
 	Mat labImage;
@@ -57,27 +51,14 @@ int main()
 		return -1;
 	}
 
-	//N number of pixel in image
-	uint N = inputImage.total();
+	SLICsp slic(inputImage, k);
+	slic.initClusterCenter();
 
-	//initialize array of labels and distances for each pixels
-	vector<PixelSLIC> tabPixSLIC(N);
-
-	//initialize array of cluaster centers
-	vector<Cluster> tabCluaster(k);
-
-	ClusterCenter claster(k);
-
-	for (auto i : claster.tabCluaster_)
-		cout << "CL " << i.a << endl;
-
-	//calculate distance between cluster centers
-	uint S = sqrt(N / k);
-
-	cout << "PIXEL " << tabPixSLIC.size() << endl;
-	cout << "Claster " << tabCluaster.size() << endl;
-	cout << "SIZE IMAGE " << N << endl;
-	cout << "S " << S << endl;
+	for (unsigned int i = 0; i < slic.tabCluaster_->size(); i++)
+	{
+		circle(inputImage, Point(slic.tabCluaster_->at(i).x,
+			slic.tabCluaster_->at(i).y), 5, Scalar(255, 0, 0));
+	}
 
 	// Create a window for display.
 	namedWindow("Display window", WINDOW_AUTOSIZE); 

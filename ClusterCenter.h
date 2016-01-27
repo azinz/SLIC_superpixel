@@ -19,7 +19,9 @@ class ClusterCenter
 public:
 	ClusterCenter(unsigned int size);
 
-//private:
+	void clear();
+
+private:
 	vector<Cluster> tabCluaster_;
 };
 

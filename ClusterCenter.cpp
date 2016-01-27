@@ -6,3 +6,8 @@ ClusterCenter::ClusterCenter(unsigned int size)
 {
 
 }
+
+void ClusterCenter::clear()
+{
+	tabCluaster_.clear();
+}
