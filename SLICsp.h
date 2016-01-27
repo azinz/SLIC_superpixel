@@ -9,37 +9,46 @@
 using namespace cv;
 using namespace std;
 
-struct Cluster
+struct LABxy
 {
-	unsigned char l = 0;
-	unsigned char a = 0;
-	unsigned char b = 0;
-	unsigned int x = 0;
-	unsigned int y = 0;
+	uchar l = 0;
+	uchar a = 0;
+	uchar b = 0;
+	uint x = 0;
+	uint y = 0;
 };
 
 class SLICsp
 {
 public:
-	SLICsp(const Mat &inputImg, unsigned int k);
+	SLICsp(const Mat &inputImg, unsigned int k, uint m);
 	~SLICsp();
 	void initClusterCenter();
 	void moveClusterCenter();
 	void initLabelDistancePixel();
-	unsigned int getS()const;
-	unsigned int getN()const;
-	unsigned int getK()const;
+	void computeDistance();
+	void meanClaster();
 
+	uint getS()const;
+	uint getN()const;
+	uint getK()const;
+	uint getM()const;
+	////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!
 //private:
+	void findMinimalValue(const Mat &inputImage, LABxy &clusterCenter);
+	uint distance(const LABxy &clusterCenter, const LABxy &pixel, double m, uint S);
 	void releaseResource();
 	void releaseTabCluster();
 	void releaseTabLabelDistance();
-	vector<Cluster> *tabCluaster_;
+	vector<LABxy> tabCluster_;
 	Mat tabLabel_;
 	Mat tabDistance_;
-	const Mat &imputImage_;
-	unsigned int k_;
-	unsigned int S_;
+	Mat labSpaceImage_;
+	const Mat &inputImage_;
+	uint k_;
+	uint m_;
+	uint S_;
 };
+
 
 #endif

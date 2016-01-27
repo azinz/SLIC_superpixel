@@ -149,11 +149,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ClusterCenter.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="SLICsp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ClusterCenter.h" />
+    <ClInclude Include="GradientImg.h" />
+    <ClInclude Include="SLICsp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
