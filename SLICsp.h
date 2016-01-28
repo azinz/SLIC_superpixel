@@ -11,17 +11,18 @@ using namespace std;
 
 struct LABxy
 {
-	uchar l = 0;
-	uchar a = 0;
-	uchar b = 0;
-	uint x = 0;
-	uint y = 0;
+	int l = 0;
+	int a = 0;
+	int b = 0;
+	int x = 0;
+	int y = 0;
+	unsigned int count = 0;
 };
 
 class SLICsp
 {
 public:
-	SLICsp(const Mat &inputImg, unsigned int k, uint m);
+	SLICsp(const Mat &inputImg, int k, int m);
 	~SLICsp();
 	void initClusterCenter();
 	void moveClusterCenter();
@@ -29,14 +30,14 @@ public:
 	void computeDistance();
 	void meanClaster();
 
-	uint getS()const;
-	uint getN()const;
-	uint getK()const;
-	uint getM()const;
+	int getS()const;
+	int getN()const;
+	int getK()const;
+	int getM()const;
 	////////////////////////////////////////////!!!!!!!!!!!!!!!!!!!!
 //private:
 	void findMinimalValue(const Mat &inputImage, LABxy &clusterCenter);
-	uint distance(const LABxy &clusterCenter, const LABxy &pixel, double m, uint S);
+	float distance(const LABxy &clusterCenter, const LABxy &pixel, int m, int S);
 	void releaseResource();
 	void releaseTabCluster();
 	void releaseTabLabelDistance();
@@ -45,9 +46,9 @@ public:
 	Mat tabDistance_;
 	Mat labSpaceImage_;
 	const Mat &inputImage_;
-	uint k_;
-	uint m_;
-	uint S_;
+	int k_;
+	int m_;
+	int S_;
 };
 
 

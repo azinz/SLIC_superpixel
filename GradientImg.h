@@ -16,6 +16,7 @@ public:
 		GaussianBlur(inputImage, inputImage, Size(3, 3), 0, 0, BORDER_DEFAULT);
 		
 		cvtColor(inputImage, grayImage, CV_BGR2GRAY);
+
 		Sobel(grayImage, grad_x, CV_16S, 1, 0, 3, 1, 0, BORDER_DEFAULT);
 		convertScaleAbs(grad_x, abs_grad_x);
 
