@@ -1,8 +1,17 @@
-/********************************************************
-*
-*
-*
-*********************************************************/
+/**
+main.cpp
+
+@brief     Implementation of SLIC algorithm
+
+@details   
+**************Warining******************
+This code is writed under C++11 and OpenCV 3.0 lib
+
+@author		Dumitru Loghin
+			Azin Zareian
+
+@date      25_01_2016
+*/
 
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
@@ -10,135 +19,262 @@
 #include <iostream>
 #include <cmath>
 #include <vector>
+#include <chrono>
+
+//including SLIC implemetation as class object
 #include "SLICsp.h"
 
 using namespace cv;
 using namespace std;
 
-//define path and file name of image
-#define FILE_NAME "d:\\alimentare.jpg"
+/**************************************************************
+ * Define section:
+ * in order to configurate the SLIC algorithm
+ *
+ * MAIN configurations applied by defines:
+ * 1. PARALLEL_COMPUTING // to allow to decrease time execution
+ * 2. VIDEO_TREATING // to allow reading a video stream file
+ * 3. FILE_NAME_PICTURE / FILE_NAME_VIDEO // Path file defines
+ * 4. NUMBER_OF_SUPERPIXELS // number of super pixels
+ * 5. NUMBER_OF_ITERATION // number of iteratations
+ * 6. COMPACITY // compacity of color space disatance
+ * ************************************************************/
 
-//define input parameters
+//1.
+//to enable/disable parallel computing
+//please use the PARALLEL_COMPUTING define in defines.h
+#include "defines.h"
+
+//2.
+//if VIDEO_TREATING directiver is defined then the main program will execute
+//swich to reading the video file
+//else  to reading the image file
+//#define VIDEO_TREATING
+
+//3.
+//define path and file name of image
+//if the VIDEO_TREATING	directive is undefined 
+#define FILE_NAME_PICTURE "e:\\lena.jpg"
+
+//define path and file name of video
+//if the VIDEO_TREATING directive is defined 
+#define FILE_NAME_VIDEO "e:\\MVI_9284.mov"
+
+//4.
+//define the numer of super pixels
 #define NUMBER_OF_SUPERPIXELS 1200
 
-//define number of iteration
+//5.
+//define the number of iteration
 #define NUMBER_OF_ITERATION 5
+
+//6.
 //define compacity
 #define COMPACITY 35
 
-//#define SHOW
 
-//structure of cluster center
-/*struct Cluster
-{
-	uchar l = 0;
-	uchar a = 0;
-	uchar b = 0;
-	uint x = 0;
-	uint y = 0;
-};*/
-
+#ifdef VIDEO_TREATING
+/**************************************************************
+ * Main program:
+ * Description: Shows the sequences of image frames from
+ * the video file.
+ * This segment of code is activated when the VIDEO_TREATING 
+ * directive are defined.
+ **************************************************************/
 int main()
 {
 	//k number of super pixels
 	unsigned int k = NUMBER_OF_SUPERPIXELS;
+        //m compacity
+	unsigned int m = COMPACITY;
+
+        //using the opencv API lib in order to extact frames from vedio stream
+        //with the sequences of frame from video file
+	VideoCapture capture(FILE_NAME_VIDEO);
+	Mat frame;
+
+        // Check if the file is opened and ready to read
+        // if an error occurred then exit
+	if (!capture.isOpened())
+	{
+		cout << "Error when reading video file " << FILE_NAME_VIDEO << std::endl;
+		return -1;
+	}
+
+	// Create a window for displaying
+	namedWindow("Display window", WINDOW_AUTOSIZE);
+
+        //main cycle of video streaming
+	while (1)
+	{
+           //extraction the image frame from video file
+		capture >> frame;
+
+		cout << "*** START SLIC ALGORITHM ***" << endl;
+		cout << "INTIALIZE CLUSTER CENTER ";
+
+                //"std::chrono::steady_clock::now()"
+                //is used to measure the time execution
+                auto start = std::chrono::steady_clock::now();
+
+                //instantiate the SLIC object algorithm 
+                //by input paramters
+                //frame image, k and m
+		SLICsp slic(frame, k, m);
+
+                //initialization cluaster center
+		slic.initClusterCenter();
+
+                //move the cluster center
+		slic.moveClusterCenter();
+
+                //initialize the distance tabel
+                //and label tabel
+		slic.initLabelDistancePixel();
+
+		auto end = std::chrono::steady_clock::now();
+		cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+
+                //repeat the computing super pixel "NUMBER_OF_ITERATION" times
+		for (unsigned int i = 0; i < NUMBER_OF_ITERATION; i++)
+		{
+			cout << "- COMPUTE DISTANCE " << i;
+			start = std::chrono::steady_clock::now();
+
+                        //compute the distance
+			slic.computeDistance();
+
+			end = std::chrono::steady_clock::now();
+			cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+			cout << "- MEAN CLASTER " << i;
+			start = std::chrono::steady_clock::now();
+
+                        //calculate the cluster means
+			slic.meanClaster();
+			end = std::chrono::steady_clock::now();
+
+			cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+			cout << "- END " << i << endl << endl;
+		}
+
+		cout << "*** DRAW THE CONTOUR ***";
+		start = std::chrono::steady_clock::now();
+
+                //extraction the image with the contour as super pixel
+		Mat img = slic.getSegmentation();
+
+		end = std::chrono::steady_clock::now();
+		cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+		cout << " --------- SHOW THE SUPER PIXELS --------- " << endl << endl;
+		
+                // Show the treated image inside the window
+		imshow("Display window", img);
+
+                //waiting for 'esc' key press for 1 ms. If 'esc' key is pressed, break loop 
+		if (waitKey(1) == 27) 
+		{
+			break;
+		}
+	}
+	// Waiting for a keystroke in the window 
+	waitKey(0); 
+	return 0;
+}
+
+#else//VIDEO_TREATING
+/**************************************************************
+ * Main program:
+ * Description: Shows the image from the image file.
+ * This segment of code is activated when the VIDEO_TREATING                                  
+ * directive are not defined.
+ **************************************************************/
+int main()
+{
+	//k number of the super pixels
+	unsigned int k = NUMBER_OF_SUPERPIXELS;
+        //m compacity
 	unsigned int m = COMPACITY;
 
 	//original image
 	Mat inputImage;
-	//image in grayscale space
-	Mat grayImage, grad_x, grad_y;
-	Mat abs_grad_x, abs_grad_y, grad;
-	//image in LAB space 
-	Mat labImage;
 
 	// Read the file
-	inputImage = imread(FILE_NAME, IMREAD_COLOR); 
+	inputImage = imread(FILE_NAME_PICTURE, IMREAD_COLOR); 
 
-	// Check for invalid input
+        // Check if the file is opened and ready to read
+        // if an error occurred then exit
 	if (!inputImage.data)
 	{
 		cout << "Could not open or find the image" << std::endl;
 		return -1;
 	}
+	
+	cout << "*** START SLIC ALGORITHM ***" << endl;
+	cout << "INTIALIZE CLUSTER CENTER ";
 
+        //"std::chrono::steady_clock::now()"
+        //is used to measure the time execution
+	auto start = std::chrono::steady_clock::now();
+
+        //instantiate the SLIC object algorithm
+        //by input paramters
+        //frame image, k and m
 	SLICsp slic(inputImage, k, m);
-	slic.initClusterCenter();
-	slic.moveClusterCenter();
-	slic.initLabelDistancePixel();	
 
+        //initialization cluaster center
+	slic.initClusterCenter();
+
+        //move the cluster center
+	slic.moveClusterCenter();
+
+        //initialize the distance tabel
+        //and label tabel
+	slic.initLabelDistancePixel();
+
+	auto end = std::chrono::steady_clock::now();
+	cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+
+        //repeat the computing super pixel "NUMBER_OF_ITERATION" times
 	for (unsigned int i = 0; i < NUMBER_OF_ITERATION; i++)
 	{
-		cout << "- COMPUTE " << i << endl;
+		cout << "- COMPUTE DISTANCE " << i;
+		start = std::chrono::steady_clock::now();
+
+                //compute the distance
 		slic.computeDistance();
-		cout << "- MEAN " << i << endl;
+
+		end = std::chrono::steady_clock::now();
+		cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+		cout << "- MEAN CLASTER " << i;
+
+		start = std::chrono::steady_clock::now();
+
+                //calculate the cluster means
 		slic.meanClaster();
-		cout << "- END " << i << endl;
+
+		end = std::chrono::steady_clock::now();
+		cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+		cout << "- END " << i << endl << endl;
 	}
 
-	/*for (unsigned int i = 0; i < slic.tabCluster_.size(); i++)
-	{
-		circle(inputImage, Point(slic.tabCluster_.at(i).x,
-			slic.tabCluster_.at(i).y), 5, Scalar(255, 0, 255));
-	}*/
-	/*for (int y = 0; y < slic.tabLabel_.rows; y++)
-		for (int x = 0; x < slic.tabLabel_.cols; x++)
-		{
-			if (slic.tabLabel_.at<int>(y, x) == -1)
-			{
-				circle(inputImage, Point(x, y), 0, Scalar(slic.tabLabel_.at<int>(y, x)%255, 0, 255));
-			}
-		
-		}*/
+	cout << "*** DRAW THE CONTOUR ***";
+	start = std::chrono::steady_clock::now();
 
-#ifdef SHOW
-	for (int y = 0; y < slic.tabLabel_.rows; y++)
-		for (int x = 0; x < slic.tabLabel_.cols; x++)
-		{
-	
-		circle(inputImage, Point(x, y), 0, Scalar(255 / (slic.tabLabel_.at<int>(y, x) % 7 + 1), 0, 255 / (slic.tabLabel_.at<int>(y, x) % 20 + 1)));
-		}
-		
-	cout << " TEST MAIN1" << endl;
-	
-#else
-	Mat canny_output;
-	vector<vector<Point> > contours;
-	vector<Vec4i> hierarchy;
+        //extraction the image with the contour as super pixel
+	Mat img = slic.getSegmentation();
 
-	
+	end = std::chrono::steady_clock::now();
+	cout << " t = " << std::chrono::duration <double, std::milli>(end - start).count() << " ms" << endl;
+	cout << " --------- SHOW THE SUPER PIXELS --------- " << endl << endl;
 
-	/// Draw contours
-	Mat imgContour = Mat(slic.tabLabel_.size(), CV_8UC1);
-
-	for (int y = 0; y < slic.tabLabel_.rows; y++)
-		for (int x = 0; x < slic.tabLabel_.cols; x++)
-		{
-		if (slic.tabLabel_.at<int>(y, x) % 2 == 0)
-			imgContour.at<uchar>(y, x) = 100;
-		else
-			imgContour.at<uchar>(y, x) = 255;
-		}
-
-	cout << " TEST MAIN2" << endl;
-	/// Detect edges using canny
-	Canny(imgContour, canny_output, 1, 1, 3);
-	/// Find contours
-	findContours(canny_output, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE, Point(0, 0));
-
-	cout << " TEST MAIN3" << endl;
-	for (int i = 0; i< contours.size(); i++)
-	{
-		//Scalar color = Scalar(rng.uniform(0, 255), rng.uniform(0, 255), rng.uniform(0, 255));
-		drawContours(inputImage, contours, i, Scalar(0, 0, 255), 1, 8, hierarchy, 0, Point());
-	}
-#endif	
 	// Create a window for display.
-	namedWindow("Display window", WINDOW_AUTOSIZE); 
-	// Show our image inside it.
-	imshow("Display window", inputImage); 
+	namedWindow("Display window", WINDOW_AUTOSIZE);
+        // Show the treated image inside the window
+	imshow("Display window", img);
 
-	// Wait for a keystroke in the window
+	// waiting for a keystroke in the window 
 	waitKey(0); 
 	return 0;
 }
+#endif//VIDEO_TREATING
+
