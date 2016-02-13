@@ -15,7 +15,7 @@ This code is writed under C++11
 #ifndef DEFINES
 #define DEFINES
 
-//enable this define in order to use all CPU cores of machine
+//enable this definition in order to use all CPU cores of machine
 #define PARALLEL_COMPUTING
 
 #endif
