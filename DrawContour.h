@@ -46,13 +46,13 @@ void HorizontalDraw(Mat &tempImg_, Mat &drawImgOut)
 	for (int y = 0; y < tempImg_.rows; y++)
 	{
                 //cycle on x until number of columns -1
-                //to avoid the overboard looking the adjacent pixel
+                //to avoid the overboard checking the adjacent pixel
 		for (int x = 0; x < tempImg_.cols - 1; x++)
 		{
                         //label extraction from the position x,y
 			int label = tempImg_.at<int>(y, x);
-                        //check if the label is differnet with the next label X+1
-                        //if yes then a pixel will be stored as BLUE color in
+                        //check if the label is differnet from the next label X+1
+                        //if yes then a pixel will be stored as a BLUE color in
                         //output image
                         if (tempImg_.at<int>(y, x + 1) != label)
 			{
@@ -72,15 +72,15 @@ void HorizontalDraw(Mat &tempImg_, Mat &drawImgOut)
 void VerticalDraw(Mat &tempImg_, Mat &drawImgOut)
 {
         //cycle on x until number of rows -1
-        //to avoid the overboard looking the adjacent pixel
+        //to avoid the overboard checking the adjacent pixel
 	for (int y = 0; y < tempImg_.rows - 1; y++)
 	{
 		for (int x = 0; x < tempImg_.cols; x++)
 		{
                         //label extraction from the position x,y
 			int label = tempImg_.at<int>(y, x);
-                        //check if the label is differnet with the next label Y+1
-                        //if yes then a pixel will be stored as BLUE color in
+                        //check if the label is differnet from the next label Y+1
+                        //if yes then a pixel will be stored as a BLUE color in
                         //output image
                         if (tempImg_.at<int>(y + 1, x) != label)
 			{
@@ -148,13 +148,13 @@ public:
 		for (int y = 0; y < rows_; y++)
 		{
                     //cycle on x until number of columns -1
-                    //to avoid the overboard looking the adjacent pixel
+                    //to avoid the overboard checking the adjacent pixel
 			for (int x = 0; x < cols_ - 1; x++)
 			{
                             //label extraction from the position x,y
 				int label = tempImg_.at<int>(y, x);
-                                //check if the label is differnet with the next label X+1
-                                //if yes then a pixel will be stored as BLUE color in
+                                //check if the label is differnet from the next label X+1
+                                //if yes then a pixel will be stored as a BLUE color in
                                 //output image
                                 if (tempImg_.at<int>(y, x + 1) != label)
 				{
@@ -167,14 +167,14 @@ public:
 
                 //Draw the contour by vertical scaning
                 //cycle on x until number of rows -1
-                //to avoid the overboard looking the adjacent pixel
+                //to avoid the overboard checking the adjacent pixel
 		for (int y = 0; y < rows_ - 1; y++)
 		{
 			for (int x = 0; x < cols_; x++)
 			{
                             //label extraction from the position x,y
 				int label = tempImg_.at<int>(y, x);
-                                //check if the label is differnet with the next label Y+1
+                                //check if the label is differnet from the next label Y+1
                                 //if yes then a pixel will be stored as BLUE color in
                                 //output image
                                 if (tempImg_.at<int>(y + 1, x) != label)
