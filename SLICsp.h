@@ -49,7 +49,7 @@ struct LABxy
 };//LABxy
 
 /**
-  @brief    The Class which perform the segemtation the image by applying the
+  @brief    The Class which perform the segemtation of image by applying the
             simple linear iterative clustering (SLIC) algorithm
 */
 class SLICsp
@@ -88,7 +88,7 @@ public:
 	void initLabelDistancePixel();
 
         /**
-          @brief    compute the distance and assiagne
+          @brief compute the distance and assigning
           @param void
           @return void
         */
@@ -139,7 +139,7 @@ public:
 private:
         /**
           @brief place the cluster in the lowest gradient in 3x3 region
-          @param input gradient image, input by alias the cluster center data structure
+          @param input gradient image, input by alias the cluster center data structure 
           @return void
         */
 	void findMinimalValue(const Mat &inputImage, LABxy &clusterCenter);
@@ -159,7 +159,7 @@ private:
 	void releaseTabCluster();
 
         /**
-          @brief clear the distance and label tables
+          @brief clear the distance and tables label
           @param void
           @return void
         */
