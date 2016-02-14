@@ -5,7 +5,7 @@
 #include <future>
 
 /**
-	@brief calculate distance of euclidean space and LAB color space between two pixel
+	@brief calculate distance of euclidean space and LAB color space between two pixels
 	@param pixel of cluster center, pixel from ROI, compacity (m) and cluster distance (S)
 	@return the distance
 */
@@ -22,7 +22,7 @@ float distance(const LABxy &clusterCenter, const LABxy &pixel, int m, int S)
 		powf(clusterCenter.x - pixel.x, 2)
 		+ powf(clusterCenter.y - pixel.y, 2));
 
-	//combine both distance in one general
+	//combining both distance
 	return sqrtf(powf(Dc / m, 2) + powf(Ds / S, 2));
 }
 
@@ -57,7 +57,7 @@ void SLICsp::initClusterCenter()
         //the cycle will break when the image will be entier covered by clusters
 	while (1)
 	{
-            //check if the line was filled up with clusters
+            //check if the line was filled up by clusters
             //if yes then we pass to the next line
 		if (cX >= inputImage_.cols)
 		{
@@ -76,7 +76,7 @@ void SLICsp::initClusterCenter()
 		cluster.y = cY;
                 //push the cluster in tabel
 		tabCluster_.push_back(cluster);
-                //pass to next postion cluster
+                //pass to next cluster postion
 		cX += getS();
 	}
 }
@@ -114,7 +114,7 @@ void SLICsp::initLabelDistancePixel()
 						CV_32S,
 						Scalar(-1));
 
-        //initialize the table of distance with max number of float data type(3.402823e+38)
+        //initialize the table of distance with maximume number of float data type(3.402823e+38)
 	tabDistance_ = Mat(inputImage_.rows, inputImage_.cols,
 						CV_32F,
 						Scalar(numeric_limits<float>::max()));
