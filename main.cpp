@@ -160,7 +160,7 @@ int main()
 		cout << "*** DRAW THE CONTOUR ***";
 		start = std::chrono::steady_clock::now();
 
-                //extraction the image with the contour as super pixel
+                //extraction the image with the contour as a super pixel
 		Mat img = slic.getSegmentation();
 
 		end = std::chrono::steady_clock::now();
@@ -170,7 +170,7 @@ int main()
                 // Show the treated image inside the window
 		imshow("Display window", img);
 
-                //waiting for 'esc' key press for 1 ms. If 'esc' key is pressed, break loop 
+                //waiting for pressing 'esc' key for 1 ms. If 'esc' key is pressed, break loop 
 		if (waitKey(1) == 27) 
 		{
 			break;
@@ -260,7 +260,7 @@ int main()
 	cout << "*** DRAW THE CONTOUR ***";
 	start = std::chrono::steady_clock::now();
 
-        //extraction the image with the contour as super pixel
+        //extraction the image with the contour as a super pixel
 	Mat img = slic.getSegmentation();
 
 	end = std::chrono::steady_clock::now();
