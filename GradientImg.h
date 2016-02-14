@@ -29,7 +29,7 @@ class GradientImg
 {
 public:
     /**
-      @brief calculate the gradient an image
+      @brief calculate the gradient image
       @param input original image, output gradient image
       @return void
     */
@@ -41,7 +41,7 @@ public:
                 //Pass the input image through the Gaussian convolution by 3x3 kernel
 		GaussianBlur(inputImage, blurImgare, Size(3, 3), 0, 0, BORDER_DEFAULT);
 
-        //converting the blured image in image of grayscale color space
+        //converting the blured image to image of grayscale color space
 		cvtColor(blurImgare, grayImage, CV_BGR2GRAY);
 
                 //treat the grayscale image by sobel derivative in horizontal direction
@@ -65,7 +65,7 @@ public:
                 //convert the partial results to CV_8U depth
 		convertScaleAbs(grad_y, abs_grad_y);
 
-                //mixing the gradients in one output results
+                //mixing the gradients to one output results
 		addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0, outputImageGrad);
 	}
 };
